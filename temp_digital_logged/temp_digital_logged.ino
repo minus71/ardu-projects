@@ -50,6 +50,12 @@ int degref = 0;
 LiquidCrystal lcd(4,5,6,7,8,9);
 RTC_DS1307 RTC;
 
+
+int displayHour = 0;
+int displayMinute = 0;
+int displaySecond = 0;
+
+
 void setup(void)
 {
   lcd.begin(16, 2);
@@ -112,6 +118,8 @@ void loop(void)
     lastButtonState = buttonValue;
     onButton(buttonValue);
   }
+  
+  displayTime();
 }
 
 void onButton(int value){
@@ -269,3 +277,45 @@ void saveData(float temp){
     }
   }
 }
+
+void displayTime(){
+  DateTime dt  = RTC.now();
+  short currentHour = dt.hour();
+  if(currentHour != displayHour){
+    lcd.setCursor(8,0);
+    lcd.print("00");
+    lcd.setCursor(8,0);
+    lcd.print(currentHour, DEC);
+  }
+
+  short currentMinute = dt.minute();
+  if(currentMinute != displayMinute){
+    lcd.setCursor(10,0);
+    lcd.print(":00");
+    if(currentMinute>9){
+      lcd.setCursor(11,0);
+    }else{
+      lcd.setCursor(12,0);
+    }
+    lcd.print(currentMinute, DEC);
+  }
+  
+  
+  short currentSecond = dt.second();
+  if(currentSecond != displaySecond){
+    lcd.setCursor(13,0);
+    lcd.print(":00");
+    if(currentSecond>9){
+      lcd.setCursor(14,0);
+    }else{
+      lcd.setCursor(15,0);
+    }
+    lcd.print(currentSecond, DEC);
+  }
+  
+  displayHour = currentHour;
+  displayMinute = currentMinute;
+  displaySecond = currentSecond;
+
+}  
+
