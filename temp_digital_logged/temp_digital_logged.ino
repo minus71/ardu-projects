@@ -106,9 +106,7 @@ void loop(void)
     conversionLock = false;
     //Serial.print("Temperature for the device 1 (index 0) is: ");
     Serial.println(temp);
-    lcd.setCursor(0,0);
-    lcd.print(temp);
-    lcd.write(degref);
+    displayTemp(temp);
   }
 
   int v = analogRead(button);
@@ -319,3 +317,10 @@ void displayTime(){
 
 }  
 
+void displayTemp(float temp){
+  lcd.setCursor(0,0);
+  lcd.print("       ");
+  lcd.setCursor(0,0);
+  lcd.print(temp);
+  lcd.write(degref);
+}
