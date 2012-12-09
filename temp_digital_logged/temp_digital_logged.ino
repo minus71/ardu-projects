@@ -23,7 +23,7 @@ SdFile root;
 #define CACHING 1
 int state = CACHING;
 
-int const button = 3;
+int const button = 0;
 boolean cardPresent = false;
 boolean conversionLock =  false;
 long tempRequestTime=0;
@@ -50,7 +50,11 @@ void setup(void)
   lcd.createChar(degref,degsym);
   pinMode(10, OUTPUT);     // change this to 53 on a mega
   digitalWrite(10,HIGH);
+  
+  // Button moved to anaolog 0
   pinMode(button, INPUT);
+
+
   // start serial port
   Serial.begin(9600);
   lcd.setCursor(0,1);
@@ -83,7 +87,8 @@ void loop(void)
     lcd.write(degref);
   }
 
-  int buttonValue = digitalRead(button);
+  int v = analogRead(button);
+  int buttonValue = v >128;
   if(buttonValue != lastButtonState){
     lastButtonState = buttonValue;
     onButton(buttonValue);
