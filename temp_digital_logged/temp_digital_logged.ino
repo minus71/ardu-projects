@@ -12,7 +12,10 @@ OneWire oneWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature. 
 DallasTemperature sensors(&oneWire);
 
+// Using Adafruit logging shield so setting 
+// chipselect to pin 10
 const int chipSelect = 10;    
+
 // include the SD library:
 #include <SD.h>
 
@@ -103,7 +106,8 @@ void loop(void)
   }
 
   int v = analogRead(button);
-  int buttonValue = v >128;
+  int buttonValue = (v >128)?HIGH:LOW;
+  
   if(buttonValue != lastButtonState){
     lastButtonState = buttonValue;
     onButton(buttonValue);
