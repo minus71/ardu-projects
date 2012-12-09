@@ -1,5 +1,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <Wire.h>
+#include "RTClib.h"
 
 // Data wire is plugged into port 2 on the Arduino
 #define ONE_WIRE_BUS 2
@@ -43,6 +45,7 @@ byte degsym[8] = {0x0,0x4,0xa,0x4,0x0,0x0,0x0};
 int degref = 0;
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(4,5,6,7,8,9);
+RTC_DS1307 RTC;
 
 void setup(void)
 {
@@ -59,9 +62,21 @@ void setup(void)
   Serial.begin(9600);
   lcd.setCursor(0,1);
   lcd.print("MEM             ");
+  
+  
+  Wire.begin();
+  RTC.begin();
+  if (! RTC.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // following line sets the RTC to the date & time this sketch was compiled
+    RTC.adjust(DateTime(__DATE__, __TIME__));
+  }
+
   // Start up the library
   sensors.begin();
   sensors.setWaitForConversion(false);
+  
+  
 }
 
 void loop(void)
@@ -213,9 +228,13 @@ void saveData(float temp){
        // open the file. note that only one file can be open at a time,
       // so you have to close this one before opening another.
       // if the file is available, write to it:
+      
+      DateTime now = RTC.now();
+
+      
       logFile.print(temp);
       logFile.print(";");
-      logFile.println(millis());
+      logFile.println(now.unixtime());
       logFile.close();
       Serial.print("Saving to ");
       Serial.println(fileName);
@@ -229,8 +248,9 @@ void saveData(float temp){
       Serial.println("Cache full");
       cacheIndex=9;
     }else{
+      DateTime now = RTC.now();
       cache[cacheIndex]=temp;
-      mcache[cacheIndex]=millis();
+      mcache[cacheIndex]=now.unixtime();
       lcd.setCursor(4,1);
       lcd.print(cacheIndex+1);
       lcd.print("/");
